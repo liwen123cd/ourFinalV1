@@ -2,6 +2,7 @@
 #include "sys_sqlite.h"
 #include "ui_sale_detail_dialog.h"
 #include "globaldata.h"
+#include "storagemanage.h"
 #include <QIntValidator>
 #include <QMessageBox>
 #include <QSqlTableModel>
@@ -58,27 +59,33 @@ void Sale_Detail_Dialog::on_Sale_cancel_pushbutton_clicked()
 void Sale_Detail_Dialog::Sale_Recive_Detail(const Sale_Order_Detail &detail)
 {
     //系统读入卖家信息（不可更改）
-    ui->Sale_seller_name_lineedit->setText("seller");
-    ui->Sale_seller_tel_lineedit->setText("12344445678");
-    ui->Sale_seller_address_lineedit->setText("moon");
+    ui->Sale_seller_name_lineedit->setText(User::name);
+    ui->Sale_seller_tel_lineedit->setText(User::phone);
+    ui->Sale_seller_address_lineedit->setText(User::addr);
 
     //卖家输入买家信息，商品编号（判断是否有库存）（下拉框，可选），数量（大小范围限定0~库存数量），售价（暂定由卖家输入）
     //测试用
-    //QStringList items；
+    QStringList items=StorageManage::getProductList();
     ui->Sale_item_id_combobox->clear();
-    ui->Sale_item_id_combobox->addItem("1");
-    ui->Sale_item_id_combobox->addItem("2");
-    ui->Sale_item_id_combobox->addItem("3");
-
+    if(items.empty()){
+        ui->Sale_item_id_combobox->addItem(QString::number(detail.Sale_Item_ID));
+    }else{
+        ui->Sale_item_id_combobox->addItems(items);
+    }
 
     //初始化,遍历一次库存列表，判断所选商品索引,库存,读入结构体中数据
-    int count=40;//库存
-    int num=2;//索引，默认0
+    int count=StorageManage::getAmount(detail.Sale_Item_ID);//库存
+    int num=0;//索引，默认0
+    foreach (QString item_id, items) {
+        if(item_id.toInt()==detail.Sale_Item_ID)break;
+        ++num;
+    }
+    //设置销售数量范围
     ui->Sale_item_num_lineedit->setValidator(
                 new QIntValidator(0,count,this));
-
+    //设置索引
     ui->Sale_item_id_combobox->setCurrentIndex(num);
-
+    //添加信息
     ui->Sale_buyer_name_lineedit->setText(
                 detail.Sale_Buyer_Name);
     ui->Sale_buyer_tel_lineedit->setText(
@@ -96,7 +103,7 @@ void Sale_Detail_Dialog::Sale_Recive_Detail(const Sale_Order_Detail &detail)
         Sale_Is_Check(false);
     }
     //输入商品ID
-    Sale_Show_Item("test1");
+    Sale_Show_Item(detail.Sale_Item_ID);
     //显示订单记录
     Sale_Show_State(detail.Sale_Order_ID);
 }
@@ -121,13 +128,13 @@ bool Sale_Detail_Dialog::Sale_Show_State(const QString &Order_ID)
     return true;
 }
 //显示商品详细信息
-bool Sale_Detail_Dialog::Sale_Show_Item(const QString &Item_ID)
+bool Sale_Detail_Dialog::Sale_Show_Item(int Item_ID)
 {
     //显示商品详细信息
     //测试
     //系统显示商品详细信息（以后目标）调用接口读入
-    ui->Sale_item_name_lineEdit->setText(Item_ID);
-    ui->Sale_item_count_lineEdit->setText("40");
+    ui->Sale_item_name_lineEdit->setText("Item_ID");
+    ui->Sale_item_count_lineEdit->setText(QString::number(StorageManage::getAmount(Item_ID)));
     ui->Sale_item_purchase_price_lineEdit->setText("48.9");
     ui->Sale_item_provider_lineEdit->setText(tr("愉悦之巅"));
     return true;
@@ -173,7 +180,7 @@ void Sale_Detail_Dialog::Sale_Is_Check(bool check)
 void Sale_Detail_Dialog::on_Sale_item_id_combobox_currentIndexChanged(const QString &Item_ID)
 {
     //根据商品编号查商品信息(商品名，库存，供货商，进价）
-    Sale_Show_Item(Item_ID);
+    Sale_Show_Item(Item_ID.toInt());
 }
 
 

@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->pushButton->setVisible(false);
         ui->pushButton_3->setVisible(false);
     }
-    qDebug()<<User::name;
+    //qDebug()<<User::name;
 }
 
 MainWindow::~MainWindow()

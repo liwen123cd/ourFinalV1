@@ -60,7 +60,7 @@ void Login::on_pushButton_clicked()
         //留着跳转到主窗口
 
         Data::is_admin = identify;
-        qDebug()<<Data::is_admin;
+        //qDebug()<<Data::is_admin;
 
         // 如果是卖家登录，则取数据库查询卖家的信息
         // 保存在 User 信息中

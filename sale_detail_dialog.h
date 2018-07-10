@@ -42,7 +42,7 @@ private:
     //更改界面显示模式（可读，可写）
     bool Sale_Model_Change(const QString&);
     //显示商品详细信息
-    bool Sale_Show_Item(const QString&);
+    bool Sale_Show_Item(int);
     //监测订单信息是否正确
     bool Sale_Check_Detail();
     //是否是查看

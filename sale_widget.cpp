@@ -3,6 +3,7 @@
 #include "sale_detail_dialog.h"
 #include "globaldata.h"
 #include "sale_stocktaking_dialog.h"
+#include "storagemanage.h"
 #include "ui_sale_widget.h"
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -27,7 +28,7 @@ Sale_Widget::Sale_Widget(QWidget *parent) :
     ui->setupUi(this);
     //初始化
     ui->Sale_pushButton_recive->hide();
-    if(0){
+    if(Data::is_admin){
         ui->Sale_pushButton_new->setEnabled(false);
         ui->Sale_pushButton_change->setEnabled(false);
         ui->Sale_pushButton_delete->setEnabled(false);
@@ -68,6 +69,15 @@ bool Sale_Widget::Sale_State_Change(const QString &Sale_Order_ID, const QString 
     query.next();
     if(0!=query.record().value(0).toInt()){
         qDebug()<<tr("记录已存在");
+        return false;
+    }
+    //判断记录中是否已出库
+    query.exec(QString("select count(*) from Sale_State where "
+                       "Sale_Order_ID='%1' and Sale_Order_State='出库'").arg(
+                   Sale_Order_ID));
+    query.next();
+    if(0==query.record().value(0).toInt()){
+        qDebug()<<tr("订单未出库，不能签收");
         return false;
     }
     if(-1!=Sale_Sql(sql.join(""))){
@@ -242,9 +252,9 @@ void Sale_Widget::on_Sale_pushButton_select_order_clicked()
     sql<<"' and Sale_State.Sale_Date <= '";
     sql<<ui->Sale_dateEdit_end->dateTime().toString("yyyy-MM-dd hh:mm:ss");
     sql<<QString("' and Sale_State.Sale_Order_State='创建订单'");
-    if(1){
+    if(!Data::is_admin){
         //非管理员
-        sql<<QString(" and Sale_Order.Sale_Seller_ID='%1'").arg("0001");
+        sql<<QString(" and Sale_Order.Sale_Seller_ID='%1'").arg(User::id);
 
     }
     //关键字查询（以后），高亮（呵呵）
@@ -294,9 +304,9 @@ void Sale_Widget::on_Sale_pushButton_select_number_clicked()
     sql<<"' and Sale_State.Sale_Date <= '";
     sql<<ui->Sale_dateEdit_end->dateTime().toString("yyyy-MM-dd hh:mm:ss");
     sql<<"' and Sale_Order.Sale_Order_Finished=1";
-    if(1){
+    if(!Data::is_admin){
         //非管理员
-        sql<<QString(" and Sale_Order.Sale_Seller_ID='%1'").arg("0001");
+        sql<<QString(" and Sale_Order.Sale_Seller_ID='%1'").arg(User::id);
 
     }
     if(ui->Sale_lineEdit_item_id->text()!=""){
@@ -333,7 +343,7 @@ void Sale_Widget::Sale_Recive_Detail(const Sale_Order_Detail &detail)
         Sale_New_Order_ID(detail.Sale_Buyer_Tel,Order_ID);
         record.setValue(0,Order_ID);
         //输入卖家id
-        record.setValue(4,0001);
+        record.setValue(4,User::id);
         //状态修改为未完成（不可改）（不显示）
         record.setValue(8,0);
         Sale_Table_Model->setRecord(detail.Sale_Row,record);
@@ -454,6 +464,22 @@ void Sale_Widget::Sale_Save_Record()
         sql<<i->Sale_Date.toString("yyyy-MM-dd hh:mm:ss");
         sql<<"')";
 
+        if(i->Sale_Order_State=="创建订单"){
+            int row=0;
+            while(1){
+                if(Sale_Table_Model->record(row).value(0).toString()==
+                        i->Sale_Order_ID){
+                    break;
+                }
+                ++row;
+            }
+
+            QSqlRecord record=Sale_Table_Model->record(row);
+            //qDebug()<<record.value(0).toString();
+            //调用出库函数
+            //orderid gai
+            StorageManage::sellOut(record.value(0).toInt(),record.value(5).toInt(),record.value(6).toInt());
+        }
         if(-1!=Sale_Sql(sql.join(""))){
             QMessageBox::warning(this,tr("警告"),sql.join(""),QMessageBox::Ok);
         }
@@ -489,9 +515,9 @@ void Sale_Widget::Sale_New_Table()
     //table modelc初始化
     Sale_Table_Model=new QSqlTableModel(this);
     Sale_Table_Model->setTable("Sale_Order");
-    if(1){
+    if(!Data::is_admin){
         //如果不是管理员，显示该卖家订单
-        Sale_Table_Model->setFilter(QString("Sale_Seller_ID='%1'").arg("0001"));
+        Sale_Table_Model->setFilter(QString("Sale_Seller_ID='%1'").arg(User::id));
     }
     Sale_Table_Model->setSort(0,Qt::DescendingOrder);
     Sale_Table_Model->select();
@@ -526,7 +552,7 @@ void Sale_Widget::on_tableView_doubleClicked(const QModelIndex &index)
        }
        ++Row;
     }
-    qDebug()<<Row;
+    //qDebug()<<Row;
     Sale_Order_Detail detail;
     QSqlRecord record=Sale_Table_Model->record(Row);
     Sale_Get_Order_Detail(detail,Row);
@@ -544,7 +570,7 @@ void Sale_Widget::on_Sale_pushButton_count_clicked()
     Sale_Stocktaking_Dialog * dialog=new Sale_Stocktaking_Dialog(this);
     dialog->show();
 }
-
+//管理员测试用，签收
 void Sale_Widget::on_Sale_pushButton_recive_clicked()
 {
     Sale_State_Change(ui->tableView->currentIndex().sibling(
