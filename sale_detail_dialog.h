@@ -4,21 +4,7 @@
 #include <QDialog>
 
 class QSqlTableModel;
-
-struct Sale_Order_Detail
-{
-    //订单信息
-    int Sale_Row;
-    QString Sale_Order_ID;
-    QString Sale_Buyer_Name;
-    QString Sale_Buyer_Tel;
-    QString Sale_Buyer_Address;
-    int Sale_Item_ID;
-    int Sale_Item_Num;
-    float Sale_Item_Price;//单价
-    QString Sale_State;
-
-};
+struct Sale_Order_Detail;
 
 namespace Ui {
 class Sale_Detail_Dialog;

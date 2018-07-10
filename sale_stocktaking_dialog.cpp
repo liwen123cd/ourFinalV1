@@ -1,6 +1,6 @@
 #include "sale_stocktaking_dialog.h"
 #include "ui_sale_stocktaking_dialog.h"
-#include "Create_Sale_DataBase.h"
+#include "sys_sqlite.h"
 #include <QSqlRecord>
 
 Sale_Stocktaking_Dialog::Sale_Stocktaking_Dialog(QWidget *parent) :

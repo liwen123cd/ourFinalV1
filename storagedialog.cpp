@@ -1,11 +1,12 @@
 #include "storagedialog.h"
 #include "ui_storagedialog.h"
-#include "dbconn.h"
+//#include "dbconn.h"
 #include <QSqlQueryModel>
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QMessageBox>
 #include <QDebug>
+#include <QSqlError>
 #include "querydialog.h"
 #include "mysqlquerymodel.h"
 #include "insertdialog.h"

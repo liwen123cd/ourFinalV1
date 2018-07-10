@@ -1,6 +1,7 @@
 #include "sale_detail_dialog.h"
-#include "Create_Sale_DataBase.h"
+#include "sys_sqlite.h"
 #include "ui_sale_detail_dialog.h"
+#include "globaldata.h"
 #include <QIntValidator>
 #include <QMessageBox>
 #include <QSqlTableModel>

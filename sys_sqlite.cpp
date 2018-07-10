@@ -204,12 +204,6 @@ void createConnectSqlite()
 }
 
 //执行sql语句
-static int Sale_Sql(const QString&sql){
-    QSqlQuery query;
-    query.exec(sql);
-    //qDebug()<<query.lastError();
-    return query.lastError().number();
-}
 
 /*
  * 创建数据库表的函数
@@ -459,4 +453,15 @@ bool checkExist(QString input, int number)
             flag = false;
     }
     return flag;
+}
+
+
+int Sale_Sql(const QString &sql)
+{
+
+    QSqlQuery query;
+    query.exec(sql);
+    //qDebug()<<query.lastError();
+    return query.lastError().number();
+
 }

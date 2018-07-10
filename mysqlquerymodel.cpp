@@ -25,7 +25,7 @@ Qt::ItemFlags MySqlQueryModel::flags(const QModelIndex &index) const
 }
 
 // 重写setData方法
-bool MySqlQueryModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool MySqlQueryModel::setData(const QModelIndex &index, const QVariant &value,int)
 {
     if (index.column() == 1 || index.column() == 2) {
         return false;

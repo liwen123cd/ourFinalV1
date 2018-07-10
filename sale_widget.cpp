@@ -1,6 +1,7 @@
+#include "sys_sqlite.h"
 #include "sale_widget.h"
 #include "sale_detail_dialog.h"
-#include "Create_Sale_DataBase.h"
+#include "globaldata.h"
 #include "sale_stocktaking_dialog.h"
 #include "ui_sale_widget.h"
 #include <QSqlDatabase>

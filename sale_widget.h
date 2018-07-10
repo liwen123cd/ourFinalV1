@@ -10,33 +10,9 @@ class QSqlQueryModel;
 class Sale_Detail_Dialog;
 class QModelIndex;
 
-
 struct Sale_Order_Detail;
-/*{
-    //订单信息
-    int Sale_Row;
-    QString Sale_Buyer_Name;
-    QString Sale_Buyer_Tel;
-    QString Sale_Buyer_Address;
-    int Sale_Item_ID;
-    int Sale_Item_Num;
-    float Sale_Item_Price;//单价
-
-};*/
-struct Sale_State_Detail
-{
-    QString Sale_Order_ID;
-    QString Sale_Order_State;
-    QDateTime Sale_Date;
-};
-struct Product_Detail
-{
-    //商品信息
-    QString Product_Name;
-    float Product_Price;
-    QString Product_Provider;
-
-};
+struct Sale_State_Detail;
+struct Product_Detail;
 
 
 namespace Ui {

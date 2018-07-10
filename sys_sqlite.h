@@ -28,6 +28,7 @@ bool identityCheck(QString name, int inputText);
 void recordSeller(QString input);
 void sqlOperator(QString sql);
 bool checkExist(QString input, int number);
-static int Sale_Sql(const QString&sql);
+int Sale_Sql(const QString &sql);
+
 
 #endif // SYS_SQLITE_H
